@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Immersive Art</title>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent: #00f2fc;
+            --text: #ffffff;
+            --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(45deg, #0C1129, #231A2C, #1E0740);
+            font-family: 'Segoe UI', 'Kanit', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Menu System --- */
+        .menu-btn {
+            position: fixed; 
+            top: 30px; 
+            right: 30px; 
+            width: 60px; 
+            height: 60px;
+            background: var(--glass-bg); 
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); 
+            border-radius: 50%;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            cursor: pointer; 
+            z-index: 1000; 
+            transition: 0.5s;
+        }
+        .menu-btn:hover { transform: rotate(90deg); border-color: var(--accent); }
+        
+        .burger, .burger::before, .burger::after {
+            position: absolute; 
+            width: 24px; 
+            height: 2px; 
+            background: #fff;
+            transition:0.5s; 
+            border-radius: 2px;
+        }
+        .burger::before { content: ''; top: -8px; }
+        .burger::after { content: ''; top: 8px; }
+
+        .open .burger { transform:rotate(360deg); background: transparent; }
+        .open .burger::before { transform: rotate(45deg); top: 0; }
+        .open .burger::after { transform: rotate(-45deg); top: 0; }
+
+        .glass-menu {
+            position: fixed; 
+            inset: 0; 
+            z-index: 900;
+            background: rgba(10, 10, 25, 0.1); 
+            backdrop-filter: blur(40px);
+            clip-path: circle(0% at 93% 8%); 
+            transition:clip-path 0.8s ;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .glass-menu.active { clip-path: circle(150% at 93% 8%); }
+
+        .menu-nav { list-style: none; text-align: center; }
+
+        .nav-item {
+            margin:35px 0;
+            opacity: 0;
+            transform:translateY(40px);
+            transition:all 0.6s var(--ease);
+        }
+
+        .glass-menu.active .nav-item { opacity: 1; transform:translateY(0); }
+        
+        .nav-link {
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            text-decoration: none;
+            color: rgba(255,255,255,0.2); 
+            text-transform: uppercase; 
+            transition:all 0.5s var(--ease); 
+            letter-spacing: 5px;
+        }
+
+        .nav-link:hover {
+             color: #fff; 
+             letter-spacing: 12px; 
+             text-shadow: 0 0 15px var(--accent); 
+            }
+
+        /* --- Main Layout --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
+
+        .hero { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px); 
+            border-radius: 40px;
+            padding: 60px; 
+            margin-bottom: 30px;
+        }
+        
+        .hero-main {
+            display: grid; 
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px; 
+            align-items: center;
+        }
+
+        .badge {
+            background: rgba(0, 242, 252, 0.1); 
+            color: var(--accent);
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 242, 252, 0.3); 
+            display: inline-block;
+            transition:all 0.6s var(--ease);
+        }
+
+        .badge:hover {
+            background: #00f2fc;
+            color:#000;
+            box-shadow:0 0 15px var(--accent);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem); 
+            line-height: 1.1; 
+            margin: 15px 0; 
+            background: linear-gradient(135deg, #Fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-image {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            border: 2px solid var(--glass-border); 
+            box-shadow: 0 0 40px rgba(0,242,252,0.1);
+        }
+
+        .hero-image img { width: 100%; display: block; }
+
+        /* --- Grid System --- */
+        .grid-bento { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 20px; }
+
+        .card {
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border);
+            padding: 30px; 
+            border-radius: 30px; 
+            transition: 0.4s var(--ease);
+            text-align: center; 
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover { 
+            transform: translateY(-10px); 
+            border-color: var(--accent); 
+            background: rgba(255,255,255,0.12); }
+        
+        .card-wide { display: flex; text-align: left; gap: 20px; align-items: center; }
+        .card-icon { width: 60px; flex-shrink: 0; margin-bottom: 15px; }
+        .card-wide .card-icon { margin-bottom: 0; }
+        .card-icon img { width: 100%; }
+
+        .btn-neon { 
+            padding: 12px 30px; 
+            border: 2px solid var(--accent); 
+            border-radius: 50px;
+            color: var(--accent); 
+            font-weight: bold; 
+            cursor: pointer;
+            transition: 0.4s; 
+            background: transparent; 
+            margin-top: 20px;
+        }
+
+        .btn-neon:hover { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 0 20px var(--accent); 
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 992px) {
+            .hero-main, .grid-bento { grid-template-columns: 1fr; }
+            .hero { padding: 40px 20px; text-align: center; }
+            .card-wide { flex-direction: column; text-align: center; }
+            .hero-image { max-width: 100%; }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="menu-btn" id="menu-btn"><div class="burger"></div></div>
+    
+    <nav class="glass-menu" id="glass-menu">
+        <ul class="menu-nav">
+            <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Gallery</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Video</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-main">
+                <div class="hero-content">
+                    <span class="badge">Next Gen Art</span>
+                    <h1>Visual<br>Immersive Art</h1>
+                    <p>สัมผัสประสบการณ์ศิลปะดิจิทัลที่ก้าวข้ามขีดจำกัดของการมองเห็น</p>
+                    <button class="btn-neon">Explore Work</button>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000" alt="Art">
+                </div>
+            </div>
+        </section>
+
+        <div class="grid-bento">
+            <div class="card card-wide">
+                <div class="card-icon"><img src="https://img.icons8.com/neon/96/image.png"></div>
+                <div>
+                    <h3>Visual Impact</h3>
+                    <p>รูปภาพที่สื่ออารมณ์ได้ชัดเจนและทรงพลังในทุกพิกเซล</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="margin: auto auto 15px;"><img src="https://img.icons8.com/neon/96/design.png"></div>
+                <h3>Seamless</h3>
+                <p>การจัดวางที่สมบูรณ์แบบ</p>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="margin: auto auto 15px;"><img src="https://img.icons8.com/neon/96/idea.png"></div>
+                <h3>Innovation</h3>
+                <p>แนวคิดที่ล้ำสมัย</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('glass-menu');
+        btn.onclick = () => {
+            btn.classList.toggle('open');
+            menu.classList.toggle('active');
+            document.body.style.overflow = 
+			menu.classList.contains('active') ? 'hidden' : 'auto';
+        };
+    </script>
+</body>
+</html>
